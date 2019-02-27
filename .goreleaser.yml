@@ -1,0 +1,34 @@
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - main: ./cmd/kds
+    binary: kds
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+dockers:
+  - image_templates:
+      - "tommy351/kubenvoy:latest"
+      - "tommy351/kubenvoy:{{ .Tag }}"
+      - "tommy351/kubenvoy:v{{ .Major }}"
+      - "tommy351/kubenvoy:v{{ .Major }}.{{ .Minor }}"
+    dockerfile: Dockerfile
+    binaries:
+      - kds

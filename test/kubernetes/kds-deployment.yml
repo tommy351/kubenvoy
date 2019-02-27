@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kds
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kds
+  template:
+    metadata:
+      labels:
+        app: kds
+    spec:
+      containers:
+        - name: kds
+          image: tommy351/kubenvoy:latest
+          env:
+            - name: ENVOY_NODE
+              value: test-id
