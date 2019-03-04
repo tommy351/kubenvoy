@@ -39,6 +39,29 @@ jobs:
             go test -v ./pkg/... ./internal/... ./cmd/... | tee ${TEST_RESULTS}/go-test.out
       - store_test_results:
           path: /tmp/test-results
+  test_e2e:
+    docker:
+      - image: circleci/golang:1.11
+    steps:
+      - checkout
+      - go_get
+      - setup_remote_docker
+      - run: mkdir -p $GOPATH/bin
+      - run:
+          name: Install goreleaser
+          command: curl -L https://github.com/goreleaser/goreleaser/releases/download/v0.102.0/goreleaser_Linux_x86_64.tar.gz | tar -xzC $GOPATH/bin
+      - run:
+          name: Install kind
+          command: |
+            go get -d sigs.k8s.io/kind
+            go install sigs.k8s.io/kind
+          working_directory: $HOME
+      - run:
+          name: Install kubectl
+          command: |
+            curl -o $GOPATH/bin/kubectl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod +x $GOPATH/bin/kubectl
+      - run: ./test/run.sh
 
 workflows:
   version: 2
@@ -46,3 +69,4 @@ workflows:
     jobs:
       - lint
       - test_go
+      - test_e2e
