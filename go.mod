@@ -6,9 +6,12 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/ansel1/merry v1.3.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/envoyproxy/go-control-plane v0.6.7
+	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
+	github.com/elazarl/goproxy v0.0.0-20181111060418-2ce16c963a8a // indirect
+	github.com/envoyproxy/go-control-plane v0.6.8
+	github.com/fatih/structs v1.1.0
 	github.com/gogo/googleapis v1.1.0 // indirect
-	github.com/gogo/protobuf v1.2.1 // indirect
+	github.com/gogo/protobuf v1.2.1
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
@@ -23,8 +26,10 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/onsi/ginkgo v1.7.0
+	github.com/onsi/gomega v1.4.3
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
-	github.com/rs/zerolog v1.11.1-0.20190207154502-4daee2b75898
+	github.com/rs/zerolog v1.12.0
 	github.com/spf13/viper v1.3.1
 	go.opencensus.io v0.19.0 // indirect
 	golang.org/x/crypto v0.0.0-20190219172222-a4c6cb3142f2 // indirect
@@ -35,7 +40,7 @@ require (
 	google.golang.org/grpc v1.18.0
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/api v0.0.0-20181121191454-a61488babbd6
-	k8s.io/apimachinery v0.0.0-20190216013122-f05b8decd79c // indirect
+	k8s.io/apimachinery v0.0.0-20190216013122-f05b8decd79c
 	k8s.io/client-go v10.0.0+incompatible
 	k8s.io/klog v0.2.0 // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect

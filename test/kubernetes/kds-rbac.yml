@@ -1,0 +1,29 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kds
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources:
+      - endpoints
+      - services
+    verbs:
+      - get
+      - watch
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kds
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: kubenvoy
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: kds
+  apiGroup: rbac.authorization.k8s.io

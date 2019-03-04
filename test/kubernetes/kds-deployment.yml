@@ -14,7 +14,20 @@ spec:
     spec:
       containers:
         - name: kds
-          image: tommy351/kubenvoy:latest
+          image: tommy351/kubenvoy
+          imagePullPolicy: Never
           env:
             - name: ENVOY_NODE
               value: test-id
+            - name: LOG_LEVEL
+              value: debug
+        - name: envoy
+          image: envoyproxy/envoy:37bfd8ac347955661af695a417492655b21939dc
+          volumeMounts:
+            - name: config
+              mountPath: /etc/envoy
+      serviceAccountName: kubenvoy
+      volumes:
+        - name: config
+          configMap:
+            name: envoy

@@ -7,10 +7,30 @@ data:
     node:
       cluster: test-cluster
       id: test-id
-
     admin:
       access_log_path: /dev/null
       address:
         socket_address:
           address: 0.0.0.0
           port_value: 10001
+    static_resources:
+      clusters:
+        - name: kds
+          type: STRICT_DNS
+          lb_policy: ROUND_ROBIN
+          http2_protocol_options: {}
+          connect_timeout: 1s
+          hosts:
+            - socket_address:
+                address: 127.0.0.1
+                port_value: 4000
+    dynamic_resources:
+      ads_config:
+        api_type: GRPC
+        grpc_services:
+          envoy_grpc:
+            cluster_name: kds
+      cds_config:
+        ads: {}
+      lds_config:
+        ads: {}

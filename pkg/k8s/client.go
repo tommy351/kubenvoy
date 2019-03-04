@@ -1,4 +1,4 @@
-package kubernetes
+package k8s
 
 import (
 	"context"
@@ -16,17 +16,25 @@ import (
 
 type Client interface {
 	WatchEndpoints(ctx context.Context, opts *WatchEndpointsOptions) cache.SharedIndexInformer
+	WatchService(ctx context.Context, opts *WatchServiceOptions) cache.SharedIndexInformer
+}
+
+type WatchOptions struct {
+	ResyncPeriod time.Duration
 }
 
 type ListEndpointsOptions struct{}
 
 type WatchEndpointsOptions struct {
 	ListEndpointsOptions
+	WatchOptions
+}
 
-	ResyncPeriod time.Duration
-	OnAdd        func(obj interface{})
-	OnUpdate     func(old, new interface{})
-	OnDelete     func(obj interface{})
+type ListServiceOptions struct{}
+
+type WatchServiceOptions struct {
+	ListEndpointsOptions
+	WatchOptions
 }
 
 type client struct {
@@ -55,4 +63,8 @@ func NewClient(conf *config.KubernetesConfig) (Client, error) {
 
 func (c *client) WatchEndpoints(ctx context.Context, opts *WatchEndpointsOptions) cache.SharedIndexInformer {
 	return v1.NewEndpointsInformer(c.client, c.config.Namespace, opts.ResyncPeriod, cache.Indexers{})
+}
+
+func (c *client) WatchService(ctx context.Context, opts *WatchServiceOptions) cache.SharedIndexInformer {
+	return v1.NewServiceInformer(c.client, c.config.Namespace, opts.ResyncPeriod, cache.Indexers{})
 }

@@ -11,13 +11,13 @@ import (
 	xds "github.com/envoyproxy/go-control-plane/pkg/server"
 	"github.com/rs/zerolog"
 	"github.com/tommy351/kubenvoy/pkg/config"
-	"github.com/tommy351/kubenvoy/pkg/kubernetes"
+	"github.com/tommy351/kubenvoy/pkg/k8s"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
 	Config           *config.Config
-	KubernetesClient kubernetes.Client
+	KubernetesClient k8s.Client
 }
 
 func (s *Server) Serve(ctx context.Context) (err error) {
@@ -41,6 +41,7 @@ func (s *Server) Serve(ctx context.Context) (err error) {
 	api.RegisterEndpointDiscoveryServiceServer(grpcServer, server)
 	api.RegisterClusterDiscoveryServiceServer(grpcServer, server)
 	api.RegisterRouteDiscoveryServiceServer(grpcServer, server)
+	api.RegisterListenerDiscoveryServiceServer(grpcServer, server)
 
 	go func() {
 		logger.Info().Str("addr", ln.Addr().String()).Msg("Starting server")

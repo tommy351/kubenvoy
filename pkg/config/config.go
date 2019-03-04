@@ -1,7 +1,10 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/ansel1/merry"
+	"github.com/fatih/structs"
 	"github.com/spf13/viper"
 )
 
@@ -35,11 +38,25 @@ func ReadConfig() (*Config, error) {
 
 	// Bind to environment variables
 	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
-	// Default values
-	v.SetDefault("server.address", ":4000")
-	v.SetDefault("kubernetes.namespace", "default")
-	v.SetDefault("log.level", "info")
+	// Set default values
+	s := structs.New(&Config{
+		Server: ServerConfig{
+			Address: ":4000",
+		},
+		Kubernetes: KubernetesConfig{
+			Namespace: "default",
+		},
+		Log: LogConfig{
+			Level: "info",
+		},
+	})
+	s.TagName = "mapstructure"
+
+	if err := v.MergeConfigMap(s.Map()); err != nil {
+		return nil, merry.Wrap(err)
+	}
 
 	if err := v.Unmarshal(&config); err != nil {
 		return nil, merry.Wrap(err)
