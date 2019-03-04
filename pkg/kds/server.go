@@ -51,5 +51,5 @@ func (s *Server) Serve(ctx context.Context) (err error) {
 	<-ctx.Done()
 	grpcServer.GracefulStop()
 
-	return
+	return err
 }

@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/tommy351/kubenvoy/pkg/k8s"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/portforward"
@@ -22,7 +22,7 @@ import (
 func portForwardPod(ctx context.Context, conf *rest.Config, pod *corev1.Pod, ports []string) (err error) {
 	readyCh := make(chan struct{})
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", pod.Namespace, pod.Name)
-	hostIP := strings.TrimLeft(conf.Host, "https:/")
+	hostIP := strings.TrimPrefix(conf.Host, "https:/")
 	serverURL := url.URL{Scheme: "https", Path: path, Host: hostIP}
 	roundTripper, upgrader, err := spdy.RoundTripperFor(conf)
 
@@ -55,7 +55,7 @@ var _ = Describe("kds", func() {
 		client, err := kubernetes.NewForConfig(conf)
 		Expect(err).NotTo(HaveOccurred())
 
-		pods, err := client.CoreV1().Pods("default").List(v1.ListOptions{
+		pods, err := client.CoreV1().Pods("default").List(metav1.ListOptions{
 			LabelSelector: "app=kds",
 		})
 		Expect(err).NotTo(HaveOccurred())

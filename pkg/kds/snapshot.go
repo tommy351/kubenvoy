@@ -65,7 +65,7 @@ func runInformer(ctx context.Context, informer cache.SharedIndexInformer) {
 	waitInformerSynced(ctx, informer)
 }
 
-func waitInformerSynced(ctx context.Context, informer cache.SharedIndexInformer) {
+func waitInformerSynced(_ context.Context, informer cache.SharedIndexInformer) {
 	for {
 		// TODO: Check if context is done
 		if informer.HasSynced() {
