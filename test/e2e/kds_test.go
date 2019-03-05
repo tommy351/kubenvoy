@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -21,16 +20,20 @@ import (
 
 func portForwardPod(ctx context.Context, conf *rest.Config, pod *corev1.Pod, ports []string) (err error) {
 	readyCh := make(chan struct{})
-	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", pod.Namespace, pod.Name)
-	hostIP := strings.TrimPrefix(conf.Host, "https:/")
-	serverURL := url.URL{Scheme: "https", Path: path, Host: hostIP}
+	serverURL, err := url.Parse(conf.Host)
+
+	if err != nil {
+		return err
+	}
+
+	serverURL.Path = fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", pod.Namespace, pod.Name)
 	roundTripper, upgrader, err := spdy.RoundTripperFor(conf)
 
 	if err != nil {
 		return err
 	}
 
-	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: roundTripper}, http.MethodPost, &serverURL)
+	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: roundTripper}, http.MethodPost, serverURL)
 	forwarder, err := portforward.New(dialer, ports, ctx.Done(), readyCh, ioutil.Discard, ioutil.Discard)
 
 	go func() {

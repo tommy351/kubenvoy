@@ -1,0 +1,11 @@
+apiVersion: skaffold/v1beta6
+kind: Config
+build:
+  artifacts:
+    - image: tommy351/kubenvoy-test
+      docker:
+        dockerfile: test/Dockerfile
+deploy:
+  kubectl:
+    manifests:
+      - test/kubernetes/*.yml
