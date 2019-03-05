@@ -47,6 +47,7 @@ jobs:
       - run:
           name: Install Go 1.11.5
           command: circleci-install golang 1.11.5
+      - run: go get ./...
       - run:
           name: Install minikube
           command: |
