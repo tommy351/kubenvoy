@@ -5,6 +5,8 @@ build:
     - image: tommy351/kubenvoy-test
       docker:
         dockerfile: test/Dockerfile
+  local:
+    useBuildkit: true
 deploy:
   kubectl:
     manifests:

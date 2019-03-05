@@ -45,6 +45,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Go 1.11.5
+          command: circleci-install golang 1.11.5
+      - run:
           name: Install minikube
           command: |
             curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -64,13 +67,13 @@ jobs:
             sudo mv kubectl /usr/local/bin/kubectl
       - run:
           name: Start minikube
-          command: minikube start --vm-driver=none
+          command: sudo -E minikube start --vm-driver=none
       - run:
           name: Run skaffold
-          command: skaffold run -f test/skaffold.yml
+          command: sudo -E skaffold run -f test/skaffold.yml
       - run:
           name: Run tests
-          command: docker run -it -f test/Dockerfile .
+          command: go test -v ./test/e2e/...
 
 workflows:
   version: 2

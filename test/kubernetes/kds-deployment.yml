@@ -23,6 +23,11 @@ spec:
               value: debug
         - name: envoy
           image: envoyproxy/envoy:37bfd8ac347955661af695a417492655b21939dc
+          ports:
+            - name: http
+              containerPort: 10000
+            - name: admin
+              containerPort: 10001
           volumeMounts:
             - name: config
               mountPath: /etc/envoy
