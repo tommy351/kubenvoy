@@ -69,4 +69,4 @@ workflows:
     jobs:
       - lint
       - test_go
-      - test_e2e
+      # - test_e2e
