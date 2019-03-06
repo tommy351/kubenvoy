@@ -42,14 +42,9 @@ jobs:
   test_e2e:
     machine:
       image: circleci/classic:201808-01
+      docker_layer_caching: true
     steps:
       - checkout
-      - run:
-          name: Install Go 1.11.5
-          command: circleci-install golang 1.11.5
-      - run: go env
-      - run: go version
-      - run: go get ./...
       - run:
           name: Install minikube
           command: |
@@ -72,11 +67,14 @@ jobs:
           name: Start minikube
           command: sudo -E minikube start --vm-driver=none
       - run:
+          name: Build image
+          command: skaffold build
+      - run:
           name: Run skaffold
-          command: sudo -E skaffold run -f test/skaffold.yml
+          command: sudo -E skaffold run
       - run:
           name: Run tests
-          command: go test -v ./test/e2e/...
+          command: docker run --network host -v $HOME/.kube:/root/.kube:ro tommy351/kubenvoy-test:${CIRCLE_SHA1:0:7}-dirty go test -v ./test/e2e/...
 
 workflows:
   version: 2
