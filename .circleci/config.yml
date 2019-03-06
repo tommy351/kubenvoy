@@ -10,6 +10,36 @@ commands:
           paths:
             - /go/pkg
           key: go-pkg
+  install-minikube:
+    steps:
+      - run:
+          name: Download minikube
+          command: curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      - run:
+          name: Install minikube
+          command: |
+            chmod +x minikube
+            sudo mv minikube /usr/local/bin/minikube
+  install-skaffold:
+    steps:
+      - run:
+          name: Download skaffold
+          command: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+      - run:
+          name: Install skaffold
+          command: |
+            chmod +x skaffold
+            sudo mv skaffold /usr/local/bin/skaffold
+  install-kubectl:
+    steps:
+      - run:
+          name: Download kubectl
+          command: curl -o kubectl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+      - run:
+          name: Install kubectl
+          command: |
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/kubectl
 
 jobs:
   lint:
@@ -45,24 +75,9 @@ jobs:
       docker_layer_caching: true
     steps:
       - checkout
-      - run:
-          name: Install minikube
-          command: |
-            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-            chmod +x minikube
-            sudo mv minikube /usr/local/bin/minikube
-      - run:
-          name: Install skaffold
-          command: |
-            curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-            chmod +x skaffold
-            sudo mv skaffold /usr/local/bin/skaffold
-      - run:
-          name: Install kubectl
-          command: |
-            curl -o kubectl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-            chmod +x kubectl
-            sudo mv kubectl /usr/local/bin/kubectl
+      - install-minikube
+      - install-skaffold
+      - install-kubectl
       - run:
           name: Create kube config
           command: |
@@ -83,12 +98,15 @@ jobs:
       docker_layer_caching: true
     steps:
       - checkout
+      - install-skaffold
       - run:
           name: Log in to Docker Hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Build image
-          command: docker build -t tommy351/kubenvoy:latest .
+          command: |
+            skaffold build
+            docker tag tommy351/kubenvoy:${CIRCLE_SHA1:0:7} tommy351/kubenvoy:latest
       - run:
           name: Push image
           command: docker push tommy351/kubenvoy:latest
