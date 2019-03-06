@@ -72,9 +72,6 @@ jobs:
           name: Start minikube
           command: sudo -E minikube start --vm-driver=none
       - run:
-          name: Build image
-          command: skaffold build
-      - run:
           name: Run skaffold
           command: sudo -E skaffold run
       - run:
