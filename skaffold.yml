@@ -4,6 +4,8 @@ build:
   artifacts:
     - image: tommy351/kubenvoy
       docker: {}
+  local:
+    useBuildkit: true
 deploy:
   kubectl:
     manifests:

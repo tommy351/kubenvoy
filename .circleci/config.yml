@@ -10,6 +10,15 @@ commands:
           paths:
             - /go/pkg
           key: go-pkg
+  setup-docker-daemon:
+    steps:
+      - run:
+          name: Write /etc/docker/daemon.json
+          command: |
+            echo '{"experimental":true}' | sudo tee -a /etc/docker/daemon.json
+      - run:
+          name: Restart docker
+          command: sudo service docker restart
   install-minikube:
     steps:
       - run:
@@ -75,6 +84,7 @@ jobs:
       docker_layer_caching: true
     steps:
       - checkout
+      - setup-docker-daemon
       - install-minikube
       - install-skaffold
       - install-kubectl
@@ -98,6 +108,7 @@ jobs:
       docker_layer_caching: true
     steps:
       - checkout
+      - setup-docker-daemon
       - install-skaffold
       - run:
           name: Log in to Docker Hub
