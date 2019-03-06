@@ -77,11 +77,34 @@ jobs:
       - run:
           name: Run tests
           command: docker run --network host -v $HOME/.kube:/root/.kube -v $HOME/.minikube:$HOME/.minikube tommy351/kubenvoy:${CIRCLE_SHA1:0:7} go test -v ./test/e2e/...
+  deploy-docker-hub:
+    machine:
+      image: circleci/classic:201808-01
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: Log in to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Build image
+          command: docker build -t tommy351/kubenvoy .
+      - run:
+          name: Push image
+          command: docker push tommy351/kubenvoy
 
 workflows:
   version: 2
-  test:
+  test-and-deploy:
     jobs:
       - lint
       - test_go
       - test_e2e
+      - deploy-docker-hub:
+          requires:
+            - lint
+            - test_go
+            - test_e2e
+          filters:
+            branches:
+              only: master
