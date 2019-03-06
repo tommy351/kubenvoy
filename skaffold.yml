@@ -3,7 +3,14 @@ kind: Config
 build:
   artifacts:
     - image: tommy351/kubenvoy
+      docker: {}
 deploy:
   kubectl:
     manifests:
       - test/kubernetes/*.yml
+profiles:
+  - name: test
+    patches:
+      - op: add
+        path: /build/artifacts/0/docker/target
+        value: base
