@@ -88,10 +88,10 @@ jobs:
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Build image
-          command: docker build -t tommy351/kubenvoy .
+          command: docker build -t tommy351/kubenvoy:latest .
       - run:
           name: Push image
-          command: docker push tommy351/kubenvoy
+          command: docker push tommy351/kubenvoy:latest
 
 workflows:
   version: 2
