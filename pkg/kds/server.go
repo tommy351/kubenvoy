@@ -7,10 +7,10 @@ import (
 	"github.com/ansel1/merry"
 	api "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	discovery "github.com/envoyproxy/go-control-plane/envoy/service/discovery/v2"
-	"github.com/envoyproxy/go-control-plane/pkg/cache"
 	xds "github.com/envoyproxy/go-control-plane/pkg/server"
 	"github.com/rs/zerolog"
 	"github.com/tommy351/kubenvoy/pkg/config"
+	"github.com/tommy351/kubenvoy/pkg/envoy"
 	"github.com/tommy351/kubenvoy/pkg/k8s"
 	"google.golang.org/grpc"
 )
@@ -28,7 +28,7 @@ func (s *Server) Serve(ctx context.Context) (err error) {
 		return merry.Wrap(err)
 	}
 
-	sc := cache.NewSnapshotCache(true, NodeHash{}, NewLogger(logger))
+	sc := envoy.NewCache(ctx)
 
 	if err := s.BuildSnapshot(ctx, sc); err != nil {
 		return merry.Wrap(err)

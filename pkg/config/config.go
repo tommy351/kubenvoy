@@ -2,6 +2,7 @@ package config
 
 import (
 	"strings"
+	"time"
 
 	"github.com/ansel1/merry"
 	"github.com/fatih/structs"
@@ -20,7 +21,8 @@ type ServerConfig struct {
 }
 
 type KubernetesConfig struct {
-	Namespace string `mapstructure:"namespace"`
+	Namespace    string        `mapstructure:"namespace"`
+	ResyncPeriod time.Duration `mapstructure:"resyncPeriod"`
 }
 
 type LogConfig struct {
@@ -46,7 +48,8 @@ func ReadConfig() (*Config, error) {
 			Address: ":4000",
 		},
 		Kubernetes: KubernetesConfig{
-			Namespace: "default",
+			Namespace:    "default",
+			ResyncPeriod: time.Second * 2,
 		},
 		Log: LogConfig{
 			Level: "info",

@@ -1,4 +1,4 @@
-package kds
+package envoy
 
 import "github.com/envoyproxy/go-control-plane/envoy/api/v2/core"
 
