@@ -64,6 +64,11 @@ jobs:
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/kubectl
       - run:
+          name: Create kube config
+          command: |
+            mkdir -p $HOME/.kube
+            touch $HOME/.kube/config
+      - run:
           name: Start minikube
           command: sudo -E minikube start --vm-driver=none
       - run:
