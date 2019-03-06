@@ -79,7 +79,7 @@ jobs:
           command: sudo -E skaffold run
       - run:
           name: Run tests
-          command: docker run --network host -v $HOME/.kube:/root/.kube tommy351/kubenvoy:${CIRCLE_SHA1:0:7} go test -v ./test/e2e/...
+          command: docker run --network host -v $HOME/.kube:/root/.kube -v $HOME/.minikube:$HOME/.minikube tommy351/kubenvoy:${CIRCLE_SHA1:0:7} go test -v ./test/e2e/...
 
 workflows:
   version: 2
