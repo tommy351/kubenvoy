@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: kds
-          image: tommy351/kubenvoy-test
+          image: tommy351/kubenvoy
           imagePullPolicy: Never
           env:
             - name: ENVOY_NODE

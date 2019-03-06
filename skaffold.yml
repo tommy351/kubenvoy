@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta6
 kind: Config
 build:
   artifacts:
-    - image: tommy351/kubenvoy-test
+    - image: tommy351/kubenvoy
 deploy:
   kubectl:
     manifests:
