@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/tommy351/kubenvoy/internal/cmd"
+	"github.com/tommy351/kubenvoy/pkg/cmd"
 	"github.com/tommy351/kubenvoy/pkg/config"
 	"github.com/tommy351/kubenvoy/pkg/k8s"
 	"github.com/tommy351/kubenvoy/pkg/kds"
