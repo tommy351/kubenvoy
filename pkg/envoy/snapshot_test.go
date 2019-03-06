@@ -1,8 +1,6 @@
 package envoy
 
 import (
-	"time"
-
 	api "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	"github.com/envoyproxy/go-control-plane/envoy/api/v2/core"
 	"github.com/envoyproxy/go-control-plane/envoy/api/v2/endpoint"
@@ -149,8 +147,7 @@ var _ = Describe("NewSnapshot", func() {
 			Expect(snapshot.Clusters.Items).To(Equal(map[string]envoycache.Resource{
 				"foo": &api.Cluster{
 					Name:            "foo",
-					ConnectTimeout:  time.Second,
-					LbPolicy:        api.Cluster_ROUND_ROBIN,
+					ConnectTimeout:  DefaultConnectTimeout,
 					DnsLookupFamily: api.Cluster_V4_ONLY,
 					Type:            api.Cluster_EDS,
 					EdsClusterConfig: &api.Cluster_EdsClusterConfig{

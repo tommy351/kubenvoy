@@ -7,8 +7,11 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 ENV CGO_ENABLED=0
-COPY . ./
+COPY cmd cmd
+COPY pkg pkg
 RUN go build -o /usr/local/bin/kds -tags netgo -ldflags "-w" ./cmd/kds
+
+COPY . .
 CMD ["kds"]
 
 FROM scratch

@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-no-domains
+spec:
+  selector:
+    app: echo
+  ports:
+    - port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-single-port
+  annotations:
+    kds.kubenvoy.dev/domains: "single-port.echo"
+spec:
+  selector:
+    app: echo
+  ports:
+    - port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-named-port
+  annotations:
+    kds.kubenvoy.dev/domains: "named-port.echo"
+spec:
+  selector:
+    app: echo
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+      targetPort: 80

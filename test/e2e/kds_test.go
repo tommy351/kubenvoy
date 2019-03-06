@@ -1,68 +1,79 @@
 package e2e
 
 import (
-	"context"
-	"fmt"
-	"io/ioutil"
+	"encoding/json"
 	"net/http"
-	"net/url"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/tommy351/kubenvoy/pkg/k8s"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/portforward"
-	"k8s.io/client-go/transport/spdy"
+	"github.com/tommy351/kubenvoy/test/echo"
 )
 
-func portForwardPod(ctx context.Context, conf *rest.Config, pod *corev1.Pod, ports []string) (err error) {
-	readyCh := make(chan struct{})
-	serverURL, err := url.Parse(conf.Host)
+func decodeResponse(r *http.Response) (*echo.Response, error) {
+	var res echo.Response
+	decoder := json.NewDecoder(r.Body)
 
-	if err != nil {
-		return err
+	if err := decoder.Decode(&res); err != nil {
+		return nil, err
 	}
 
-	serverURL.Path = fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", pod.Namespace, pod.Name)
-	roundTripper, upgrader, err := spdy.RoundTripperFor(conf)
+	return &res, nil
+}
 
-	if err != nil {
-		return err
-	}
-
-	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: roundTripper}, http.MethodPost, serverURL)
-	forwarder, err := portforward.New(dialer, ports, ctx.Done(), readyCh, ioutil.Discard, ioutil.Discard)
-
-	go func() {
-		err = forwarder.ForwardPorts()
-	}()
-
-	// Wait for ready
-	for range readyCh {
-	}
-
-	return
+func mustDecodeResponse(r *http.Response) *echo.Response {
+	data, err := decodeResponse(r)
+	Expect(err).NotTo(HaveOccurred())
+	return data
 }
 
 var _ = Describe("kds", func() {
-	It("Get", func() {
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
+	var (
+		req *http.Request
+		res *http.Response
+		err error
+	)
 
-		conf, err := k8s.LoadConfig()
+	BeforeEach(func() {
+		req, err = http.NewRequest(http.MethodGet, "http://localhost:10000", nil)
 		Expect(err).NotTo(HaveOccurred())
+	})
 
-		client, err := kubernetes.NewForConfig(conf)
+	JustBeforeEach(func() {
+		res, err = http.DefaultClient.Do(req)
 		Expect(err).NotTo(HaveOccurred())
+	})
 
-		pods, err := client.CoreV1().Pods("default").List(metav1.ListOptions{
-			LabelSelector: "app=kds",
+	Describe("given host = single-port.echo", func() {
+		BeforeEach(func() {
+			req.Host = "single-port.echo"
 		})
-		Expect(err).NotTo(HaveOccurred())
 
-		Expect(portForwardPod(ctx, conf, &pods.Items[0], []string{"10000"})).NotTo(HaveOccurred())
+		It("should respond status 200", func() {
+			Expect(res.StatusCode).To(Equal(http.StatusOK))
+		})
+
+		It("check response", func() {
+			data := mustDecodeResponse(res)
+			Expect(data.Method).To(Equal(http.MethodGet))
+			Expect(data.Host).To(Equal(req.Host))
+			Expect(data.URL).To(Equal("/"))
+		})
+	})
+
+	Describe("given host = named-port.echo", func() {
+		BeforeEach(func() {
+			req.Host = "named-port.echo"
+		})
+
+		It("should respond status 200", func() {
+			Expect(res.StatusCode).To(Equal(http.StatusOK))
+		})
+
+		It("check response", func() {
+			data := mustDecodeResponse(res)
+			Expect(data.Method).To(Equal(http.MethodGet))
+			Expect(data.Host).To(Equal(req.Host))
+			Expect(data.URL).To(Equal("/"))
+		})
 	})
 })
